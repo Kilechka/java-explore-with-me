@@ -23,8 +23,8 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
 
-  stat-service:
-    build: stat-service/service
+  stats-server:
+    build: stats-server/service
     image: stat
     container_name: stat
     ports:
