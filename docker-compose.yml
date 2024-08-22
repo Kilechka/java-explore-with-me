@@ -7,7 +7,7 @@ services:
       - "8080:8080"
     depends_on:
       - maindb
-      - stat-service
+      - stats-service
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main-db
       - SPRING_DATASOURCE_USERNAME=admin
@@ -23,8 +23,8 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
 
-  stats-server:
-    build: stats-server/service
+  stats-service:
+    build: stats-service/service
     image: stat
     container_name: stat
     ports:
