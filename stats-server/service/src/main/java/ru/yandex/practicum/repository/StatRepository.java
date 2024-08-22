@@ -8,7 +8,6 @@ import ru.yandex.practicum.model.ViewStats;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
