@@ -1,25 +1,25 @@
 services:
   ewm-service:
-    build: main-server
+    build: ewm-service
     image: main
     container_name: main
     ports:
       - "8080:8080"
     depends_on:
-      - maindb
+      - main-db
       - stats-server
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main-db
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
 
-  maindb:
+  main-db:
     image: postgres:16-alpine
     volumes:
       - /var/lib/postgresql/data/
-    container_name: maindb
+    container_name: main-db
     environment:
-      - POSTGRES_DB=maindb
+      - POSTGRES_DB=main-db
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
 
