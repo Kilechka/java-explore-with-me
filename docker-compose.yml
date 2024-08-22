@@ -1,5 +1,5 @@
 services:
-  main-server:
+  ewm-service:
     build: main-server
     image: main
     container_name: main
