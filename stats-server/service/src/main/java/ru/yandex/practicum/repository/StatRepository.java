@@ -26,7 +26,7 @@ public class StatRepository {
             sql += "AND uri = ANY(?) ";
         }
 
-        sql += "GROUP BY app, uri";
+        sql += "GROUP BY app, uri ORDER BY hits DESC";
 
         String finalSql = sql;
         return jdbcTemplate.query(con -> {
