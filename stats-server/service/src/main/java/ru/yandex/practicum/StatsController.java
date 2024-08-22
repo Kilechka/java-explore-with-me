@@ -1,5 +1,6 @@
 package ru.yandex.practicum;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,7 +20,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public HitDto saveHit(@RequestBody HitDto hit) {
+    public HitDto saveHit(@RequestBody @Valid HitDto hit) {
         log.info("Post-запрос для сохранения hit  " + hit);
         return service.saveHit(hit);
     }

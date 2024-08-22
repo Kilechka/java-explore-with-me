@@ -41,7 +41,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15T05:15:00\"\r\n}",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15 05:15:00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -97,7 +97,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15T05:15:00\"\r\n}",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15 05:15:00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
