@@ -1,0 +1,331 @@
+{
+	"info": {
+		"_postman_id": "03fc7df4-1226-4bf0-8d52-53387f360bb0",
+		"name": "hit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34510456"
+	},
+	"item": [
+		{
+			"name": "Запрос к эндпоинту \"/events\" с ip 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function() {\r",
+							"    pm.response.to.be.nested; \r",
+							"    pm.response.to.be.withBody; \r",
+							"    pm.response.to.be.json; \r",
+							"}); \r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false,
+				"removeRefererHeaderOnRedirect": false,
+				"disableUrlEncoding": false,
+				"followRedirects": true,
+				"tlsPreferServerCiphers": false,
+				"disableCookies": false,
+				"insecureHTTPParser": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15 05:15:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/hit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"hit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос к эндпоинту \"/events\" с ip 1 (для проверки unique)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function() {\r",
+							"    pm.response.to.be.nested; \r",
+							"    pm.response.to.be.withBody; \r",
+							"    pm.response.to.be.json; \r",
+							"}); \r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"strictSSL": false,
+				"followOriginalHttpMethod": false,
+				"followAuthorizationHeader": false,
+				"removeRefererHeaderOnRedirect": false,
+				"disableUrlEncoding": false,
+				"followRedirects": true,
+				"tlsPreferServerCiphers": false,
+				"disableCookies": false,
+				"insecureHTTPParser": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"1\",\r\n    \"timestamp\": \"1999-09-15 05:15:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/hit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"hit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос к эндпоинту \"/events/1\" с ip 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function() {\r",
+							"    pm.response.to.be.nested; \r",
+							"    pm.response.to.be.withBody; \r",
+							"    pm.response.to.be.json; \r",
+							"}); \r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events/1\",\r\n    \"ip\": \"2\",\r\n    \"timestamp\": \"1999-09-15T05:15:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/hit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"hit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос к эндпоинту \"/events\" с ip 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"app\": \"app\",\r\n    \"uri\": \"/events\",\r\n    \"ip\": \"2\",\r\n    \"timestamp\": \"1999-09-15T05:15:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/hit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"hit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение статистики",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.expect(pm.response.json()).to.be.an('array');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/stats?start=1999-09-15T05:00:00&end=1999-09-15T06:00:00&=&=&=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"stats"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "1999-09-15T05:00:00"
+						},
+						{
+							"key": "end",
+							"value": "1999-09-15T06:00:00"
+						},
+						{
+							"key": "",
+							"value": ""
+						},
+						{
+							"key": "",
+							"value": ""
+						},
+						{
+							"key": "",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение уникальной статистики к энпоинту \"/events\"",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.be.json;\r",
+							"    const responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody).to.be.an('array');\r",
+							"\r",
+							"    pm.test(\"Ответ должен содержать уникальные просмотры\", function() {\r",
+							"        pm.expect(responseBody.length).to.equal(1);\r",
+							"        pm.expect(responseBody[0].hits).to.equal(2);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"URI в ответе должен быть '/events'\", function() {\r",
+							"        pm.expect(responseBody[0].uri).to.equal(\"/events\");\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Посты должны содержать поля: app, uri, hits\", function() {\r",
+							"        pm.expect(responseBody[0]).to.have.all.keys('app', 'uri', 'hits');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/stats?start=1999-09-15T05:00:00&end=1999-09-15T06:00:00&uris=/events&unique=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"stats"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "1999-09-15T05:00:00"
+						},
+						{
+							"key": "end",
+							"value": "1999-09-15T06:00:00"
+						},
+						{
+							"key": "uris",
+							"value": "/events"
+						},
+						{
+							"key": "unique",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
