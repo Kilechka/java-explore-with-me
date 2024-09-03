@@ -217,9 +217,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
         requestRepository.saveAll(requestsWithStatus);
 
-        int ConfirmedRequests = event.getConfirmedRequests() + requestIds.size();
+        int confirmedRequests = event.getConfirmedRequests() + requestIds.size();
 
-        event.setConfirmedRequests(ConfirmedRequests);
+        event.setConfirmedRequests(confirmedRequests);
 
         return toEventFullDto(eventRepository.save(event));
     }

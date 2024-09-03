@@ -26,7 +26,7 @@ public class RequestPrivateController {
     }
 
     @GetMapping
-    public List<ParticipationRequestDto> getRequest(@PathVariable Long userId) {    
+    public List<ParticipationRequestDto> getRequest(@PathVariable Long userId) {
         log.info("Получен запрос на получение запроса");
         return requestService.getRequest(userId);
     }
