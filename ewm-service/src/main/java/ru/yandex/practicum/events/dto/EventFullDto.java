@@ -1,6 +1,7 @@
 package ru.yandex.practicum.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import ru.yandex.practicum.caregories.dto.CategoryDto;
 import ru.yandex.practicum.events.locations.Location;
@@ -23,9 +24,12 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Location location;
-    private boolean paid;
-    private int participantLimit;
-    private boolean requestModeration;
+    @Builder.Default
+    private boolean paid = false;
+    @Builder.Default
+    private int participantLimit = 0;
+    @Builder.Default
+    private boolean requestModeration = true;
     private UserShortDto initiator;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;

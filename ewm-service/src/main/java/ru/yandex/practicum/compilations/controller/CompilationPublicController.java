@@ -28,7 +28,7 @@ public class CompilationPublicController {
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilationById(@PathVariable Long compId) {
-        log.info("Получен запрос на получение событий");
+        log.info("Получен запрос на получение события");
         return compilationService.getCompilationById(compId);
     }
 }

@@ -27,7 +27,6 @@ public class UpdateEventUserRequest {
     private Location location;
     @Builder.Default
     private boolean paid = false;
-    @PositiveOrZero
     @Builder.Default
     @PositiveOrZero
     private int participantLimit = 0;

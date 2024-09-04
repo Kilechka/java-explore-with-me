@@ -19,7 +19,8 @@ public class EventShortDto {
     private CategoryDto category;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
-    private boolean paid;
+    @Builder.Default
+    private boolean paid = false;
     private UserShortDto initiator;
     private Long views;
     private int confirmedRequests;
