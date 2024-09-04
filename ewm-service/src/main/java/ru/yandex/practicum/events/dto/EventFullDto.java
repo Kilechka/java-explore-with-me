@@ -1,7 +1,6 @@
 package ru.yandex.practicum.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import ru.yandex.practicum.caregories.dto.CategoryDto;
 import ru.yandex.practicum.events.locations.Location;
