@@ -1,6 +1,7 @@
 package ru.yandex.practicum.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import ru.yandex.practicum.events.locations.Location;
@@ -26,7 +27,9 @@ public class UpdateEventAdminRequest {
     private Location location;
     @Builder.Default
     private boolean paid = false;
-    private Integer participantLimit;
+    @Builder.Default
+    @PositiveOrZero
+    private int participantLimit = 0;
     @Builder.Default
     private boolean requestModeration = true;
     private StateActionAdmin stateAction;

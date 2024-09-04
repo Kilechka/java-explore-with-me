@@ -23,12 +23,9 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Location location;
-    @Builder.Default
-    private boolean paid = false;
-    @Builder.Default
-    private int participantLimit = 0;
-    @Builder.Default
-    private boolean requestModeration = true;
+    private boolean paid;
+    private int participantLimit;
+    private boolean requestModeration;
     private UserShortDto initiator;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;

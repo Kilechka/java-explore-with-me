@@ -28,7 +28,9 @@ public class UpdateEventUserRequest {
     @Builder.Default
     private boolean paid = false;
     @PositiveOrZero
-    private Integer participantLimit;
+    @Builder.Default
+    @PositiveOrZero
+    private int participantLimit = 0;
     @Builder.Default
     private boolean requestModeration = true;
     private StateActionUser stateAction;

@@ -159,7 +159,7 @@
         if (updateEventUserRequest.isPaid()) {
             oldEvent.setPaid(true);
         }
-        if (updateEventUserRequest.getParticipantLimit() != null) {
+        if (updateEventUserRequest.getParticipantLimit() != 0) {
             oldEvent.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
         }
         if (!updateEventUserRequest.isRequestModeration()) {
@@ -398,7 +398,7 @@
         if (request.getAnnotation() != null) {
             oldEvent.setAnnotation(request.getAnnotation());
         }
-        if (request.getParticipantLimit() != null) {
+        if (request.getParticipantLimit() != 0) {
             oldEvent.setParticipantLimit(request.getParticipantLimit());
         }
         if (request.getCategory() != null) {
