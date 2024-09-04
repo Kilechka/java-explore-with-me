@@ -40,7 +40,7 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("В сервисе создаем подборку");
 
         if (compilationRepository.existsByTitle(newCompilationDto.getTitle())) {
-            throw new ConflictDataException("Данное название уже установлено");
+            throw new ConflictDataException("Данное название уже используется");
         }
 
         Compilation compilation = toCompilation(newCompilationDto);
