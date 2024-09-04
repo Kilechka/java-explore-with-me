@@ -19,7 +19,7 @@ public interface EventService {
 
     List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId);
 
-    EventFullDto updateStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest eventRequestStatus);
+    EventRequestStatusUpdateResult updateStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest eventRequestStatus);
 
     EventFullDto getEvent(Long id, HttpServletRequest request);
 

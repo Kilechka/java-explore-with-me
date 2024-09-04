@@ -1,22 +1,24 @@
 package ru.yandex.practicum.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import ru.yandex.practicum.events.locations.Location;
 import ru.yandex.practicum.events.StateActionAdmin;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
 public class UpdateEventAdminRequest {
+    @Size(min = 3, max = 120)
     private String title;
+    @Size(min = 20, max = 2000)
     private String annotation;
+    @Size(min = 20, max = 7000)
     private String description;
     private Integer category;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

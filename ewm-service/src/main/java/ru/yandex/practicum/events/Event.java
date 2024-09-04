@@ -1,10 +1,7 @@
 package ru.yandex.practicum.events;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.caregories.Category;
 import ru.yandex.practicum.events.locations.Location;
 import ru.yandex.practicum.users.User;
@@ -12,7 +9,8 @@ import ru.yandex.practicum.users.User;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

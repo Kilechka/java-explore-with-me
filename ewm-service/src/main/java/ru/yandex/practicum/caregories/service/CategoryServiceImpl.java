@@ -1,5 +1,6 @@
 package ru.yandex.practicum.caregories.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,8 @@ import ru.yandex.practicum.caregories.CategoryRepository;
 import ru.yandex.practicum.caregories.dto.CategoryDto;
 import ru.yandex.practicum.caregories.dto.CategoryMapper;
 import ru.yandex.practicum.caregories.dto.NewCategoryDto;
+import ru.yandex.practicum.events.EventRepository;
+import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -26,11 +29,15 @@ import static ru.yandex.practicum.caregories.dto.CategoryMapper.toCategoryDto;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
     @Override
-    public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
+    public CategoryDto createCategory(@Valid NewCategoryDto newCategoryDto) {
         log.info("В сервисе создаем категорию");
         Category category = toCategory(newCategoryDto);
+        if (categoryRepository.existsByName(newCategoryDto.getName())) {
+            throw new ConflictDataException("Это название уже используется");
+        }
         return toCategoryDto(categoryRepository.save(category));
     }
 
@@ -40,6 +47,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (!categoryRepository.existsById(catId)) {
             throw new NotFoundException("Категория с данным id не найдена");
         }
+        if (eventRepository.existsByCategoryId(catId)) {
+            throw new ConflictDataException("К категории привязаны события");
+        }
         categoryRepository.deleteById(catId);
     }
 
@@ -48,6 +58,9 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("В сервисе обновляем категорию");
         Category oldCategory = categoryRepository.findById(catId).orElseThrow(() ->
                 new NotFoundException("Категория не найдена"));
+        if (categoryRepository.existsByNameAndIdNot(categoryDto.getName(), catId)) {
+            throw new ConflictDataException("Это название уже используется другой категорией");
+        }
         oldCategory.setName(categoryDto.getName());
         return toCategoryDto(categoryRepository.save(oldCategory));
     }

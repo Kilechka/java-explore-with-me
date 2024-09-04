@@ -16,6 +16,7 @@ import ru.yandex.practicum.compilations.dto.NewCompilationDto;
 import ru.yandex.practicum.compilations.dto.UpdateCompilationRequest;
 import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
+import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -37,6 +38,10 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         log.info("В сервисе создаем подборку");
+
+        if (compilationRepository.existsByTitle(newCompilationDto.getTitle())) {
+            throw new ConflictDataException("Данное название уже установлено");
+        }
 
         Compilation compilation = toCompilation(newCompilationDto);
 
@@ -69,8 +74,11 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("В сервисе обновляем подборку");
         Compilation oldCompilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка не найдена"));
+        if (oldCompilation.getTitle().equals(updateCompilationRequest.getTitle())) {
+            throw new ConflictDataException("Данное название уже установлено");
+        }
 
-        if (!updateCompilationRequest.getTitle().isBlank()) {
+        if (updateCompilationRequest.getTitle() != null) {
             oldCompilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.isPinned()) {

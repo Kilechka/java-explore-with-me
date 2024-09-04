@@ -1,9 +1,7 @@
 package ru.yandex.practicum.events.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import ru.yandex.practicum.caregories.dto.CategoryDto;
 import ru.yandex.practicum.events.locations.Location;
 import ru.yandex.practicum.events.State;
@@ -11,7 +9,8 @@ import ru.yandex.practicum.users.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +20,7 @@ public class EventFullDto {
     private String annotation;
     private String description;
     private CategoryDto category;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Location location;
     @Builder.Default
@@ -30,7 +30,9 @@ public class EventFullDto {
     @Builder.Default
     private boolean requestModeration = true;
     private UserShortDto initiator;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
     private State state;
     private Long views;

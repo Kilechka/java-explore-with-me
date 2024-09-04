@@ -14,4 +14,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
 
     @Query("SELECT c FROM Compilation c LEFT JOIN FETCH c.events WHERE c.id = :id")
     Optional<Compilation> findWithEvents(Long id);
+
+    boolean existsByTitle(String title);
 }

@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
-import ru.yandex.practicum.exception.ConflictException;
+import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.requests.Request;
 import ru.yandex.practicum.requests.RequestRepository;
+import ru.yandex.practicum.requests.Status;
 import ru.yandex.practicum.requests.dto.ParticipationRequestDto;
 import ru.yandex.practicum.requests.dto.RequestMapper;
+import ru.yandex.practicum.users.User;
 import ru.yandex.practicum.users.UserRepository;
 
 import java.time.LocalDateTime;
@@ -36,45 +38,34 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-
-        if (event.getParticipantLimit() == event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
-            throw new ConflictException("Достигнут лимит участников у события");
-        }
-        if (event.getState() != PUBLISHED) {
-            throw new ConflictException("Запрещено участвовать в неопубликованном событии");
-        }
-        if (event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Запрещено участвовать в своём событии");
-        }
-        if (requestRepository.findByRequesterAndEvent(userId, eventId).isPresent()) {
-            throw new ConflictException("Запрещено подавать повторную заявку");
-        }
-
         Request request;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        if (!event.isRequestModeration()) {
+        validateEvent(event, userId);
+
+        if (event.getParticipantLimit() == 0 || !event.isRequestModeration()) {
             request = Request.builder()
                     .created(LocalDateTime.now())
-                    .requester(userId)
+                    .requester(user)
                     .status(CONFIRMED)
-                    .event(eventId)
+                    .event(event)
                     .build();
+            event.addConfirmedRequests();
+            eventRepository.save(event);
         } else {
             request = Request.builder()
                     .created(LocalDateTime.now())
-                    .requester(userId)
+                    .requester(user)
                     .status(PENDING)
-                    .event(eventId)
+                    .event(event)
                     .build();
         }
+        ParticipationRequestDto participationRequestDto = toParticipationRequestDto(requestRepository.save(request));
 
-        event.addConfirmedRequests();
-        eventRepository.save(event);
 
-        return toParticipationRequestDto(requestRepository.save(request));
+
+        return participationRequestDto;
     }
 
     @Override
@@ -84,17 +75,35 @@ public class RequestServiceImpl implements RequestService {
             throw new NotFoundException("Пользователь не найден");
         }
 
-        return requestRepository.findByRequester(userId).stream()
+        return requestRepository.findByRequesterId(userId).stream()
                 .map(RequestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-        Request request = requestRepository.findByRequesterAndEvent(userId, requestId)
-                .orElseThrow(() -> new NotFoundException("Запрос не найден или недоступен"));
-        request.setStatus(REJECTED);
+        Request request =  requestRepository.findByRequesterId(userId)
+                        .orElseThrow(() -> new NotFoundException("Запрос не найден"));
+        request.setStatus(Status.CANCELED);
 
         return toParticipationRequestDto(request);
+    }
+
+    private void validateEvent(Event event, Long userId) {
+        if (event.getState() != PUBLISHED) {
+            throw new ConflictDataException("Запрещено участвовать в неопубликованном событии");
+        }
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictDataException("Запрещено участвовать в своём событии");
+        }
+        if (requestRepository.findByRequesterIdAndEventId(userId, event.getId()).isPresent()) {
+            throw new ConflictDataException("Запрещено подавать повторную заявку");
+        }
+        if (event.getParticipantLimit() > 0) {
+            List<Request> requests = requestRepository.findByEventIdAndStatus(event.getId(), CONFIRMED);
+            if (event.getParticipantLimit() <= requests.size()) {
+                throw new ConflictDataException("Мест не осталось");
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable Long userId,
                                     @PathVariable Long eventId,
-                                    @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+                                    @RequestBody @Valid UpdateEventUserRequest updateEventUserRequest) {
         log.info("Получен запрос на обновление события");
         return eventService.updateEvent(userId, eventId, updateEventUserRequest);
     }
@@ -60,7 +60,7 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public EventFullDto updateStatus(@PathVariable Long userId,
+        public EventRequestStatusUpdateResult updateStatus(@PathVariable Long userId,
                                      @PathVariable Long eventId,
                                      @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         log.info("Получен запрос на обновление статуса");

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.events.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,7 +34,7 @@ public class EventAdminController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventForAdmin(@PathVariable Long eventId, @RequestBody UpdateEventAdminRequest request) {
+    public EventFullDto updateEventForAdmin(@PathVariable Long eventId, @RequestBody @Valid UpdateEventAdminRequest request) {
         log.info("Получен запрос на обновление события");
         return eventService.updateEventForAdmin(eventId, request);
     }

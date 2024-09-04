@@ -42,7 +42,7 @@ public class StatRepository {
             ViewStats viewStats = new ViewStats();
             viewStats.setApp(rs.getString("app"));
             viewStats.setUri(rs.getString("uri"));
-            viewStats.setHits(rs.getInt("hits"));
+            viewStats.setHits(rs.getLong("hits"));
             return viewStats;
         });
     }

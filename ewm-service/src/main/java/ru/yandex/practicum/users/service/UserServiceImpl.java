@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.users.User;
 import ru.yandex.practicum.users.UserRepository;
@@ -31,6 +32,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(NewUserRequest newUserRequest) {
         log.info("В сервисе создаем пользователя");
+        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
+            throw new ConflictDataException("Данное почта уже используется");
+        }
         User user = toUser(newUserRequest);
         return toUserDto(userRepository.save(user));
     }

@@ -3,16 +3,15 @@ package ru.yandex.practicum.events.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.events.locations.Location;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,6 +35,7 @@ public class NewEventDto {
     @Builder.Default
     private boolean paid = false;
     @Builder.Default
+    @PositiveOrZero
     private int participantLimit = 0;
     @Builder.Default
     private boolean requestModeration = true;

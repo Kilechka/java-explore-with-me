@@ -1,19 +1,19 @@
 package ru.yandex.practicum.compilations.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewCompilationDto {
     @NotBlank
+    @Size(min = 1, max = 50)
     private String title;
     @Builder.Default
     private boolean pinned = false;
