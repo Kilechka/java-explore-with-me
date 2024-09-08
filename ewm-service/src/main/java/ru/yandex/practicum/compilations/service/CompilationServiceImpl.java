@@ -16,11 +16,9 @@ import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
 import ru.yandex.practicum.exception.NotFoundException;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.compilations.dto.CompilationMapper.toCompilation;
 import static ru.yandex.practicum.compilations.dto.CompilationMapper.toCompilationDto;
 
 @Service
