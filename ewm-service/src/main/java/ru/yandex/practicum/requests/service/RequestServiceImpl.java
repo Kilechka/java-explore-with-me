@@ -82,8 +82,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-        Request request =  requestRepository.findByRequesterId(userId)
-                        .orElseThrow(() -> new NotFoundException("Запрос не найден"));
+        Request request = requestRepository.findByRequesterIdAndId(userId, requestId)
+                .orElseThrow(() -> new NotFoundException("Запрос не найден"));
         request.setStatus(Status.CANCELED);
 
         return toParticipationRequestDto(request);
@@ -101,7 +101,7 @@ public class RequestServiceImpl implements RequestService {
         }
         if (event.getParticipantLimit() > 0) {
             List<Request> requests = requestRepository.findByEventIdAndStatus(event.getId(), CONFIRMED);
-            if (event.getParticipantLimit() <= requests.size()) {
+            if (event.getParticipantLimit() == requests.size()) {
                 throw new ConflictDataException("Мест не осталось");
             }
         }

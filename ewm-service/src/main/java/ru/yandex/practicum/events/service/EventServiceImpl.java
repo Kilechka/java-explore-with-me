@@ -33,6 +33,7 @@
     import jakarta.servlet.http.HttpServletRequest;
     import java.time.LocalDateTime;
     import java.util.ArrayList;
+    import java.util.Comparator;
     import java.util.List;
     import java.util.Map;
     import java.util.stream.Collectors;
@@ -82,7 +83,6 @@
         event.setCategory(category);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(State.PENDING);
-        event.setViews(0L);
         event.setConfirmedRequests(0);
 
         Location location = Location.builder()
@@ -254,93 +254,103 @@
                     .build();
         }
 
-    @Override
-    public EventFullDto getEvent(Long id, HttpServletRequest request) {
-        log.info("В сервисе получаем событие");
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+        public EventFullDto getEvent(Long id, HttpServletRequest request) {
+            log.info("В сервисе получаем событие");
+            Event event = eventRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
-        if (event.getState() != PUBLISHED) {
-            throw new NotFoundException("Событие ещё не опубликовано");
-        }
-
-        addStatistic(request);
-
-        String uri = request.getRequestURI();
-
-        ResponseEntity<Object> response = statClient.getStatistics(LocalDateTime.now().minusYears(100),
-                LocalDateTime.now(), new String[]{uri}, true);
-        List<ViewStats> viewStatsList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
-        });
-
-        Map<Object, Integer> viewStatsMap = viewStatsList.stream()
-                .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
-                .collect(Collectors.toMap(
-                        statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())),
-                        ViewStats::getHits));
-
-        Integer views = viewStatsMap.getOrDefault(event.getId(), 0);
-
-        event.setViews(Long.valueOf(views));
-
-        return toEventFullDto(event);
-    }
-
-    @Override
-    public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                         Boolean onlyAvailable, String sort, int from,
-                                         int size, HttpServletRequest request) {
-        log.info("В сервисе получаем события");
-
-        if (rangeStart == null) {
-            rangeStart = LocalDateTime.now();
-        } else {
-            if (LocalDateTime.now().isAfter(rangeStart)) {
-                rangeStart = LocalDateTime.now();
+            if (event.getState() != PUBLISHED) {
+                throw new NotFoundException("Событие ещё не опубликовано");
             }
+
+            addStatistic(request);
+
+            String uri = request.getRequestURI();
+
+            ResponseEntity<Object> response = statClient.getStatistics(LocalDateTime.now().minusYears(100),
+                    LocalDateTime.now(), new String[]{uri}, true);
+            List<ViewStats> viewStatsList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+            });
+
+            Map<Object, Integer> viewStatsMap = viewStatsList.stream()
+                    .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
+                    .collect(Collectors.toMap(
+                            statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())),
+                            ViewStats::getHits));
+
+            Integer views = viewStatsMap.getOrDefault(event.getId(), 0);
+
+            EventFullDto eventFullDto = toEventFullDto(event);
+            eventFullDto.setViews(views);
+
+            return eventFullDto;
         }
-        if (rangeEnd == null) {
-            rangeEnd = LocalDateTime.now().plusYears(100);
-        }
-        if (rangeStart.isAfter(rangeEnd)) {
-            throw new ConflictException("Дата окончания не может быть раньше даты начала");
-        }
 
-        addStatistic(request);
+        @Override
+        public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
+                                             LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                             Boolean onlyAvailable, String sort, int from,
+                                             int size, HttpServletRequest request) {
+            log.info("В сервисе получаем события");
 
-        Pageable pageable = PageRequest.of(from / size, size);
+            if (rangeStart == null) {
+                rangeStart = LocalDateTime.now();
+            } else {
+                if (LocalDateTime.now().isAfter(rangeStart)) {
+                    rangeStart = LocalDateTime.now();
+                }
+            }
+            if (rangeEnd == null) {
+                rangeEnd = LocalDateTime.now().plusYears(100);
+            }
+            if (rangeStart.isAfter(rangeEnd)) {
+                throw new ConflictException("Дата окончания не может быть раньше даты начала");
+            }
 
-        List<Event> events;
-        if (text != null) {
-            text = text.toLowerCase();
-            events = eventRepository.findAllPublishedWithFiltersWithText(text, categories, paid, rangeStart,
-                    rangeEnd, onlyAvailable, sort, pageable);
-        } else {
-            events = eventRepository.findAllPublishedWithFiltersWithoutText(categories, paid, rangeStart,
-                    rangeEnd, onlyAvailable, sort, pageable);
-        }
+            addStatistic(request);
 
-        List<EventShortDto> eventShortDtos = events.stream()
-                .map(EventMapper::toEventShortDto)
-                .collect(Collectors.toList());
+            Pageable pageable = PageRequest.of(from / size, size);
 
-        for (EventShortDto eventShortDto : eventShortDtos) {
-            String[] uri = new String[]{String.format("/events/%s", eventShortDto.getId())};
-            ResponseEntity<Object> response = statClient.getStatistics(rangeStart, rangeEnd, uri, false);
+            List<Event> events;
+            if (text != null) {
+                text = text.toLowerCase();
+                events = eventRepository.findAllPublishedWithFiltersWithText(text, categories, paid, rangeStart,
+                        rangeEnd, onlyAvailable, pageable);
+            } else {
+                events = eventRepository.findAllPublishedWithFiltersWithoutText(categories, paid, rangeStart,
+                        rangeEnd, onlyAvailable, pageable);
+            }
+
+            List<EventShortDto> eventShortDtos = events.stream()
+                    .map(EventMapper::toEventShortDto)
+                    .collect(Collectors.toList());
+
+            String[] uris = eventShortDtos.stream()
+                    .map(eventShortDto -> String.format("/events/%s", eventShortDto.getId()))
+                    .toArray(String[]::new);
+
+            ResponseEntity<Object> response = statClient.getStatistics(rangeStart, rangeEnd, uris, false);
 
             List<ViewStats> viewStatsList = objectMapper.convertValue(response.getBody(), new TypeReference<List<ViewStats>>() {});
 
-            long views = viewStatsList.stream()
-                    .filter(viewStats -> viewStats.getUri().equals(uri[0]))
-                    .mapToLong(ViewStats::getHits)
-                    .sum();
+            for (EventShortDto eventShortDto : eventShortDtos) {
+                String uri = String.format("/events/%s", eventShortDto.getId());
+                long views = viewStatsList.stream()
+                        .filter(viewStats -> viewStats.getUri().equals(uri))
+                        .mapToLong(ViewStats::getHits)
+                        .sum();
 
-            eventShortDto.setViews(views);
+                eventShortDto.setViews(views);
+            }
+
+            if ("VIEWS".equals(sort)) {
+                eventShortDtos.sort((e1, e2) -> Long.compare(e2.getViews(), e1.getViews()));
+            } else if ("EVENT_DATE".equals(sort)) {
+                eventShortDtos.sort(Comparator.comparing(EventShortDto::getEventDate));
+            }
+
+            return eventShortDtos;
         }
-
-        return eventShortDtos;
-    }
 
     @Override
     @Transactional(readOnly = true)

@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS events (
     created_on TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     published_on TIMESTAMP WITHOUT TIME ZONE,
     state VARCHAR(10),
-    views INTEGER,
     confirmed_requests INTEGER
 );
 

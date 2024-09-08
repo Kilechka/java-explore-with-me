@@ -6,6 +6,7 @@ import ru.yandex.practicum.events.Event;
 
 import java.util.List;
 
+
 @Entity
 @Getter
 @Setter
@@ -21,11 +22,11 @@ public class Compilation {
     private String title;
     @Column(nullable = false)
     private boolean pinned;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "compilation_events",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
-    List<Event> events;
+    private List<Event> events;
 }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,5 +18,5 @@ public class NewCompilationDto {
     private String title;
     @Builder.Default
     private boolean pinned = false;
-    List<Long> events;
+    private List<Long> events = new ArrayList<>();
 }

@@ -48,7 +48,6 @@ public class Event {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
-    private Long views;
     @Column(name = "confirmed_requests")
     private int confirmedRequests;
 

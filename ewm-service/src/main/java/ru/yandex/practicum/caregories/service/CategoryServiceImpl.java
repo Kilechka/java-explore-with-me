@@ -35,9 +35,6 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto createCategory(@Valid NewCategoryDto newCategoryDto) {
         log.info("В сервисе создаем категорию");
         Category category = toCategory(newCategoryDto);
-        if (categoryRepository.existsByName(newCategoryDto.getName())) {
-            throw new ConflictDataException("Это название уже используется");
-        }
         return toCategoryDto(categoryRepository.save(category));
     }
 

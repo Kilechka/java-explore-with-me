@@ -8,17 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.compilations.Compilation;
 import ru.yandex.practicum.compilations.CompilationRepository;
-import ru.yandex.practicum.compilations.comilationsEvents.CompilationEvent;
-import ru.yandex.practicum.compilations.comilationsEvents.CompilationEventRepository;
 import ru.yandex.practicum.compilations.dto.CompilationDto;
 import ru.yandex.practicum.compilations.dto.CompilationMapper;
 import ru.yandex.practicum.compilations.dto.NewCompilationDto;
 import ru.yandex.practicum.compilations.dto.UpdateCompilationRequest;
 import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
-import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,31 +31,23 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-    private final CompilationEventRepository compilationEventRepository;
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
-        log.info("В сервисе создаем подборку");
+        log.info("В сервисе создаем компиляцию");
 
-        if (compilationRepository.existsByTitle(newCompilationDto.getTitle())) {
-            throw new ConflictDataException("Данное название уже используется");
-        }
+        List<Event> events = newCompilationDto.getEvents().stream()
+                .map(eventId -> eventRepository.findById(eventId).orElseThrow(() ->
+                        new NotFoundException("Событие с id " + eventId + " не найдено")))
+                .collect(Collectors.toList());
 
-        Compilation compilation = toCompilation(newCompilationDto);
+        Compilation compilation = Compilation.builder()
+                .events(events)
+                .pinned(newCompilationDto.isPinned())
+                .title(newCompilationDto.getTitle())
+                .build();
 
-        if (newCompilationDto.getEvents() != null) {
-            List<Long> eventsIds = newCompilationDto.getEvents();
-            List<Event> events = eventRepository.findAllById(eventsIds);
-            compilation.setEvents(events);
-            Compilation savedCompilation = compilationRepository.save(compilation);
-            List<CompilationEvent> compilationEvents = eventsIds.stream()
-                    .map(eventId -> new CompilationEvent(savedCompilation.getId(), eventId))
-                    .toList();
-            compilationEventRepository.saveAll(compilationEvents);
-            return toCompilationDto(savedCompilation);
-        } else {
-            return toCompilationDto(compilationRepository.save(compilation));
-        }
+        return toCompilationDto(compilationRepository.save(compilation));
     }
 
     @Override
@@ -74,40 +64,35 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("В сервисе обновляем подборку");
         Compilation oldCompilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка не найдена"));
-        if (oldCompilation.getTitle().equals(updateCompilationRequest.getTitle())) {
-            throw new ConflictDataException("Данное название уже установлено");
-        }
 
         if (updateCompilationRequest.getTitle() != null) {
             oldCompilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.isPinned()) {
-            oldCompilation.setPinned(true);
+            oldCompilation.setPinned(updateCompilationRequest.isPinned());
         }
-        if (!updateCompilationRequest.getEvents().isEmpty()) {
+        if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
             List<Long> eventsIds = updateCompilationRequest.getEvents();
 
             List<Event> events = eventRepository.findAllById(eventsIds);
             oldCompilation.setEvents(events);
-
-            compilationEventRepository.deleteAllByCompilationId(compId);
-
-            List<CompilationEvent> compilationEvents = eventsIds.stream()
-                    .map(eventId -> new CompilationEvent(compId, eventId))
-                    .toList();
-
-            compilationEventRepository.saveAll(compilationEvents);
         }
         return toCompilationDto(compilationRepository.save(oldCompilation));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompilationDto> getCompilations(boolean pinned, int from, int size) {
+    public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         log.info("В сервисе получаем подборки");
         Pageable pageable = PageRequest.of(from / size, size);
 
-        List<Compilation> compilations = compilationRepository.findAllByPinnedWithEvents(pinned, pageable);
+        List<Compilation> compilations;
+
+        if (pinned == null) {
+            compilations = compilationRepository.findAll(pageable).getContent();
+        } else {
+            compilations = compilationRepository.findAllByPinned(pinned, pageable);
+        }
 
         return compilations.stream()
                 .map(CompilationMapper::toCompilationDto)
@@ -118,7 +103,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional(readOnly = true)
     public CompilationDto getCompilationById(Long compId) {
         log.info("В сервисе получаем подборку");
-        Compilation compilation = compilationRepository.findWithEvents(compId)
+        Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка не найдена"));
 
         return toCompilationDto(compilation);

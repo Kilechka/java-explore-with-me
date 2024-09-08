@@ -33,7 +33,6 @@ public class EventMapper {
                 .eventDate(event.getEventDate())
                 .requestModeration(event.isRequestModeration())
                 .state(event.getState())
-                .views(event.getViews())
                 .build();
     }
 
@@ -55,7 +54,6 @@ public class EventMapper {
                 .title(eventFullDto.getTitle())
                 .requestModeration(eventFullDto.isRequestModeration())
                 .state(eventFullDto.getState())
-                .views(eventFullDto.getViews())
                 .build();
     }
 
@@ -86,7 +84,6 @@ public class EventMapper {
                 .initiator(userShortDto)
                 .confirmedRequests(event.getConfirmedRequests())
                 .eventDate(event.getEventDate())
-                .views(event.getViews())
                 .build();
     }
 }

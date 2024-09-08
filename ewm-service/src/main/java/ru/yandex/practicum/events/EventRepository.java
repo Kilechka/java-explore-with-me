@@ -20,30 +20,25 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "AND (:onlyAvailable IS FALSE OR e.confirmedRequests < e.participantLimit) " +
-            "ORDER BY " +
-            "CASE WHEN :sort = 'EVENT_DATE' THEN e.eventDate END ASC, " +
-            "CASE WHEN :sort = 'VIEWS' THEN e.views END ASC")
+            "AND (:onlyAvailable IS NULL OR e.confirmedRequests < e.participantLimit)")
     List<Event> findAllPublishedWithFiltersWithoutText(
             @Param("categories") List<Long> categories,
             @Param("paid") Boolean paid,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             @Param("onlyAvailable") Boolean onlyAvailable,
-            @Param("sort") String sort,
             Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.state = 'PUBLISHED' " +
-            "AND LOWER(e.annotation) LIKE CONCAT('%', :text, '%') OR " +
-            "     LOWER(e.description) LIKE CONCAT('%', :text, '%') " +
+            "AND (" +
+            "   LOWER(e.annotation) LIKE CONCAT('%', :text, '%') OR " +
+            "   LOWER(e.description) LIKE CONCAT('%', :text, '%')" +
+            ") " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "AND (:onlyAvailable IS FALSE OR e.confirmedRequests < e.participantLimit) " +
-            "ORDER BY " +
-            "CASE WHEN :sort = 'EVENT_DATE' THEN e.eventDate END ASC, " +
-            "CASE WHEN :sort = 'VIEWS' THEN e.views END ASC")
+            "AND (:onlyAvailable IS FALSE OR e.confirmedRequests < e.participantLimit)")
     List<Event> findAllPublishedWithFiltersWithText(
             @Param("text") String text,
             @Param("categories") List<Long> categories,
@@ -51,7 +46,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             @Param("onlyAvailable") Boolean onlyAvailable,
-            @Param("sort") String sort,
             Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
