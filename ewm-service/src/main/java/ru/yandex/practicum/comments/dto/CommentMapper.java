@@ -2,7 +2,6 @@ package ru.yandex.practicum.comments.dto;
 
 import ru.yandex.practicum.comments.Comment;
 
-
 public class CommentMapper {
 
     private CommentMapper() {
