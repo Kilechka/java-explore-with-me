@@ -18,5 +18,6 @@ public class NewCompilationDto {
     private String title;
     @Builder.Default
     private boolean pinned = false;
+    @Builder.Default
     private List<Long> events = new ArrayList<>();
 }

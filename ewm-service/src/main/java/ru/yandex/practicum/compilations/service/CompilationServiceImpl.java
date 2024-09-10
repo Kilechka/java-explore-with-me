@@ -32,12 +32,16 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
-        log.info("В сервисе создаем компиляцию");
+        log.info("В сервисе создаем подборку");
 
-        List<Event> events = newCompilationDto.getEvents().stream()
-                .map(eventId -> eventRepository.findById(eventId).orElseThrow(() ->
-                        new NotFoundException("Событие с id " + eventId + " не найдено")))
-                .collect(Collectors.toList());
+        List<Long> eventIds = newCompilationDto.getEvents();
+        List<Event> events = eventRepository.findAllById(eventIds);
+
+        if (events.size() != eventIds.size()) {
+            List<Long> foundEventIds = events.stream().map(Event::getId).collect(Collectors.toList());
+            eventIds.removeAll(foundEventIds);
+            throw new NotFoundException("События с id " + eventIds + " не найдены");
+        }
 
         Compilation compilation = Compilation.builder()
                 .events(events)
