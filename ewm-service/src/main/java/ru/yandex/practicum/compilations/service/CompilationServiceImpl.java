@@ -38,7 +38,7 @@ public class CompilationServiceImpl implements CompilationService {
         List<Event> events = eventRepository.findAllById(eventIds);
 
         if (events.size() != eventIds.size()) {
-            List<Long> foundEventIds = events.stream().map(Event::getId).collect(Collectors.toList());
+            List<Long> foundEventIds = events.stream().map(Event::getId).toList();
             eventIds.removeAll(foundEventIds);
             throw new NotFoundException("События с id " + eventIds + " не найдены");
         }
