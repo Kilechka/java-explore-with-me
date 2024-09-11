@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.comments.dto.CommentDto;
 import ru.yandex.practicum.comments.dto.NewCommentDto;
+import ru.yandex.practicum.comments.dto.UpdateCommentDto;
 import ru.yandex.practicum.comments.service.CommentService;
 
 import java.util.List;
@@ -21,13 +22,12 @@ public class CommentPrivateController {
 
     private final CommentService commentService;
 
-    @PostMapping("/{eventId}/{userId}")
+    @PostMapping("/{userId}")
     @ResponseStatus(value = HttpStatus.CREATED)
     public CommentDto createComment(@RequestBody @Valid NewCommentDto newCommentDto,
-                                    @PathVariable Long eventId,
                                     @PathVariable Long userId) {
         log.info("Получен запрос на создание комментария");
-        return commentService.createComment(newCommentDto, eventId, userId);
+        return commentService.createComment(newCommentDto, userId);
     }
 
     @DeleteMapping("/{comId}/{userId}")
@@ -37,12 +37,11 @@ public class CommentPrivateController {
         commentService.deleteComment(comId, userId);
     }
 
-    @PatchMapping("/{comId}/{userId}")
-    public CommentDto updateComment(@RequestBody @Valid NewCommentDto newCommentDto,
-                                        @PathVariable Long comId,
-                                        @PathVariable Long userId) {
+    @PatchMapping("/{userId}")
+    public CommentDto updateComment(@RequestBody @Valid UpdateCommentDto updateCommentDto,
+                                    @PathVariable Long userId) {
         log.info("Получен запрос на обновление комментария");
-        return commentService.updateComment(newCommentDto, comId, userId);
+        return commentService.updateComment(updateCommentDto, userId);
     }
 
     @GetMapping("/{eventId}")

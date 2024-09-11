@@ -1,15 +1,22 @@
 package ru.yandex.practicum.comments.dto;
 
 import ru.yandex.practicum.comments.Comment;
+import ru.yandex.practicum.events.Event;
+import ru.yandex.practicum.users.User;
+
+import java.time.LocalDateTime;
 
 public class CommentMapper {
 
     private CommentMapper() {
     }
 
-    public static Comment toComment(NewCommentDto newCommentDto) {
+    public static Comment toComment(NewCommentDto newCommentDto, User user, Event event, LocalDateTime localDateTime) {
         return Comment.builder()
                 .text(newCommentDto.getText())
+                .event(event)
+                .creator(user)
+                .changedOn(localDateTime)
                 .isModified(false)
                 .build();
     }
