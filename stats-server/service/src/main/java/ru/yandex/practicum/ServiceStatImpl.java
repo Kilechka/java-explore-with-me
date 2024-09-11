@@ -1,10 +1,10 @@
 package ru.yandex.practicum;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.exceptions.ConflictException;
 import ru.yandex.practicum.model.Hit;
 import ru.yandex.practicum.model.ViewStats;
 import ru.yandex.practicum.repository.HitRepository;
@@ -36,7 +36,7 @@ public class ServiceStatImpl implements ServiceStat {
     @Override
     public List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
         if (start.isAfter(end)) {
-            throw new ValidationException("Дата начала не может быть позже даты конца");
+            throw new ConflictException("Дата начала не может быть позже даты конца");
         }
         return statRepository.getStatistics(start, end, uris, unique);
     }
