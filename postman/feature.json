@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "админ: создание категории Copy",
+			"name": "админ: создание категории",
 			"event": [
 				{
 					"listen": "test",
@@ -63,7 +63,10 @@
 							"    pm.response.to.have.status(201);\r",
 							"    pm.response.to.be.withBody; \r",
 							"    pm.response.to.be.json; \r",
-							"}); "
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"ownerId\", jsonData.id);\r",
+							"}); \r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -173,7 +176,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events",
+					"raw": "http://localhost:8080/users/{{ownerId}}/events",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -181,7 +184,7 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"{{ownerId}}",
 						"events"
 					]
 				}
@@ -358,7 +361,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/2/2",
+					"raw": "http://localhost:8080/user/comments/100/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -367,7 +370,7 @@
 					"path": [
 						"user",
 						"comments",
-						"2",
+						"100",
 						"2"
 					]
 				}
