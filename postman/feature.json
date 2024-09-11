@@ -109,9 +109,11 @@
 						"exec": [
 							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function() {\r",
 							"    pm.response.to.have.status(201);\r",
-							"    pm.response.to.be.withBody; \r",
 							"    pm.response.to.be.json; \r",
-							"}); "
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.environment.set(\"ownerId\", jsonData.id);\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -361,7 +363,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/100/2",
+					"raw": "http://localhost:8080/user/comments/1009994455554/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -370,7 +372,7 @@
 					"path": [
 						"user",
 						"comments",
-						"100",
+						"1009994455554",
 						"2"
 					]
 				}
@@ -451,7 +453,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/2/1",
+					"raw": "http://localhost:8080/user/comments/{{ownerId}}/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -460,7 +462,7 @@
 					"path": [
 						"user",
 						"comments",
-						"2",
+						"{{ownerId}}",
 						"1"
 					]
 				}
