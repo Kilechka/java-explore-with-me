@@ -15,7 +15,6 @@ import ru.yandex.practicum.comments.dto.UpdateCommentDto;
 import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
 import ru.yandex.practicum.exception.ConflictDataException;
-import ru.yandex.practicum.exception.ConflictException;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.users.User;
 import ru.yandex.practicum.users.UserRepository;
