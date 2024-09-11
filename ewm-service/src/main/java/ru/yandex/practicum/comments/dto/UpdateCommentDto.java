@@ -10,9 +10,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewCommentDto {
+public class UpdateCommentDto {
     @NotNull
-    private long eventId;
+    private long id;
     @NotBlank
     @Size(min = 1, max = 1000)
     private String text;

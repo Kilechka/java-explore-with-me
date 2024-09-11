@@ -11,8 +11,10 @@ import ru.yandex.practicum.comments.CommentRepository;
 import ru.yandex.practicum.comments.dto.CommentDto;
 import ru.yandex.practicum.comments.dto.CommentMapper;
 import ru.yandex.practicum.comments.dto.NewCommentDto;
+import ru.yandex.practicum.comments.dto.UpdateCommentDto;
 import ru.yandex.practicum.events.Event;
 import ru.yandex.practicum.events.EventRepository;
+import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.users.User;
 import ru.yandex.practicum.users.UserRepository;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.comments.dto.CommentMapper.toComment;
 import static ru.yandex.practicum.comments.dto.CommentMapper.toCommentDto;
+import static ru.yandex.practicum.events.State.PUBLISHED;
 
 @Service
 @Slf4j
@@ -35,20 +38,24 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     @Override
-    public CommentDto createComment(NewCommentDto newCommentDto, Long eventId, Long userId) {
+    public CommentDto createComment(NewCommentDto newCommentDto, Long userId) {
         log.info("В сервисе создаем комментарий");
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findById(newCommentDto.getEventId())
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+
+        if (event.getState() != PUBLISHED) {
+            throw new ConflictDataException("Событие еще не опубликовано - комментировать нельзя");
+        }
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictDataException("Нельзя оставлять комментарии под событием, инициатором которого вы являетесь");
+        }
 
         LocalDateTime createOn = LocalDateTime.now();
 
-        Comment comment = toComment(newCommentDto);
-        comment.setCreator(user);
-        comment.setEvent(event);
-        comment.setChangedOn(createOn);
+        Comment comment = toComment(newCommentDto, user, event, createOn);
 
         return toCommentDto(commentRepository.save(comment));
     }
@@ -68,13 +75,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateComment(NewCommentDto newCommentDto, Long comId, Long userId) {
+    public CommentDto updateComment(UpdateCommentDto updateCommentDto, Long userId) {
         log.info("В сервисе обновляем комментарий");
 
-        Comment oldComment = commentRepository.findByCreatorIdAndId(userId, comId)
+        Comment oldComment = commentRepository.findByCreatorIdAndId(userId, updateCommentDto.getId())
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
 
-        oldComment.setText(newCommentDto.getText());
+        oldComment.setText(updateCommentDto.getText());
         oldComment.setModified(true);
         oldComment.setChangedOn(LocalDateTime.now());
 
