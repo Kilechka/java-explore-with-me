@@ -3,11 +3,13 @@ package ru.yandex.practicum.events.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.yandex.practicum.caregories.dto.CategoryDto;
+import ru.yandex.practicum.comments.dto.CommentDto;
 import ru.yandex.practicum.events.locations.Location;
 import ru.yandex.practicum.events.State;
 import ru.yandex.practicum.users.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,4 +39,5 @@ public class EventFullDto {
     private State state;
     private int views;
     private int confirmedRequests;
+    private List<CommentDto> comments;
 }

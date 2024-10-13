@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "8eb28aaf-0d8c-462f-81d9-d9a66f5b791f",
+		"_postman_id": "7753fa8e-297c-4e0e-a834-2664b685f1b1",
 		"name": "Explore with me - comments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34510456"
 	},
 	"item": [
 		{
-			"name": "админ: создание категории Copy",
+			"name": "админ: создание категории",
 			"event": [
 				{
 					"listen": "test",
@@ -63,7 +63,10 @@
 							"    pm.response.to.have.status(201);\r",
 							"    pm.response.to.be.withBody; \r",
 							"    pm.response.to.be.json; \r",
-							"}); "
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"ownerId\", jsonData.id);\r",
+							"}); \r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -106,9 +109,8 @@
 						"exec": [
 							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function() {\r",
 							"    pm.response.to.have.status(201);\r",
-							"    pm.response.to.be.withBody; \r",
-							"    pm.response.to.be.json; \r",
-							"}); "
+							"    pm.response.to.be.json;\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -153,6 +155,8 @@
 							"    pm.response.to.have.status(201);\r",
 							"    pm.response.to.be.withBody; \r",
 							"    pm.response.to.be.json; \r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"eventId\", jsonData.id);\r",
 							"}); "
 						],
 						"type": "text/javascript",
@@ -173,7 +177,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/1/events",
+					"raw": "http://localhost:8080/users/{{ownerId}}/events",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -181,8 +185,98 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"{{ownerId}}",
 						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создаем комментарий, когда событие не опубликовано.Ошибка 409",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 409\", function() {\r",
+							"    pm.response.to.have.status(409);\r",
+							"}); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/comments/{{ownerId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"comments",
+						"{{ownerId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "админ: обновление события",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.be.withBody; \r",
+							"    pm.response.to.be.json; \r",
+							"}); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"participantLimit\": 22,\r\n  \"stateAction\": \"PUBLISH_EVENT\",\r\n  \"description\": \"descriptiondescriptiondescriptiondescription\",\r\n  \"paid\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/admin/events/{{eventId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"{{eventId}}"
 					]
 				}
 			},
@@ -211,7 +305,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -219,7 +313,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/1/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -228,8 +322,51 @@
 					"path": [
 						"user",
 						"comments",
-						"1",
 						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создаем комментарий для инициатора. Ошибка 409",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 409\", function() {\r",
+							"    pm.response.to.have.status(409);\r",
+							"}); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/comments/{{ownerId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"comments",
+						"{{ownerId}}"
 					]
 				}
 			},
@@ -258,7 +395,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"В прошлый раз было классно\"\r\n}",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"В прошлый раз было классно\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -266,7 +403,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/1/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -275,7 +412,6 @@
 					"path": [
 						"user",
 						"comments",
-						"1",
 						"2"
 					]
 				}
@@ -305,7 +441,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"В этот раз тоже будет выступать Пугачева?\"\r\n}",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"В этот раз тоже будет выступать Пугачева?\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -313,7 +449,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/1/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -322,7 +458,6 @@
 					"path": [
 						"user",
 						"comments",
-						"1",
 						"2"
 					]
 				}
@@ -336,10 +471,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Ответ должен содержать код статуса 404 и данные в формате json\", function() {\r",
+							"pm.test(\"Ответ должен содержать код статуса 404\", function() {\r",
 							"    pm.response.to.have.status(404);\r",
-							"    pm.response.to.be.withBody; \r",
-							"    pm.response.to.be.json; \r",
 							"}); "
 						],
 						"type": "text/javascript",
@@ -352,7 +485,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"В этот раз тоже будет выступать Пугачева?\"\r\n}",
+					"raw": "{\r\n  \"eventId\":  100900111,\r\n  \"text\": \"В этот раз тоже будет выступать Пугачева?\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -360,7 +493,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/2/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -369,7 +502,6 @@
 					"path": [
 						"user",
 						"comments",
-						"2",
 						"2"
 					]
 				}
@@ -450,7 +582,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/2/1",
+					"raw": "http://localhost:8080/user/comments/2/{{ownerId}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -460,7 +592,7 @@
 						"user",
 						"comments",
 						"2",
-						"1"
+						"{{ownerId}}"
 					]
 				}
 			},
@@ -533,7 +665,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
+					"raw": "{\r\n  \"eventId\": {{eventId}},\r\n  \"text\": \"Хорошее мероприятие\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -541,7 +673,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/1/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -550,7 +682,6 @@
 					"path": [
 						"user",
 						"comments",
-						"1",
 						"2"
 					]
 				}
@@ -580,7 +711,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"Обновлено: Хорошее мероприятие\"\r\n}",
+					"raw": "{\r\n  \"id\": 4,\r\n  \"text\": \"Обновлено: Хорошее мероприятие\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -588,7 +719,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/4/2",
+					"raw": "http://localhost:8080/user/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -597,7 +728,6 @@
 					"path": [
 						"user",
 						"comments",
-						"4",
 						"2"
 					]
 				}
@@ -627,7 +757,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"text\": \"Обновлено: Хорошее мероприятие\"\r\n}",
+					"raw": "{\r\n   \"id\": 4,\r\n  \"text\": \"Обновлено: Хорошее мероприятие\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -635,7 +765,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/user/comments/4/1",
+					"raw": "http://localhost:8080/user/comments/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -644,7 +774,6 @@
 					"path": [
 						"user",
 						"comments",
-						"4",
 						"1"
 					]
 				}

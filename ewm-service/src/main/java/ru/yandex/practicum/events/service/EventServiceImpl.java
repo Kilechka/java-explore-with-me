@@ -14,6 +14,10 @@
     import ru.yandex.practicum.ViewStats;
     import ru.yandex.practicum.caregories.Category;
     import ru.yandex.practicum.caregories.CategoryRepository;
+    import ru.yandex.practicum.comments.Comment;
+    import ru.yandex.practicum.comments.CommentRepository;
+    import ru.yandex.practicum.comments.dto.CommentDto;
+    import ru.yandex.practicum.comments.dto.CommentMapper;
     import ru.yandex.practicum.events.Event;
     import ru.yandex.practicum.events.EventRepository;
     import ru.yandex.practicum.events.State;
@@ -61,6 +65,7 @@
     private final StatClient statClient;
     private final ObjectMapper objectMapper;
     private final LocationRepository locationRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public EventFullDto createEvent(NewEventDto newEventDto, Long userId) {
@@ -265,6 +270,10 @@
 
             addStatistic(request);
 
+            List<CommentDto> comments = commentRepository.findAllByEventId(id).stream()
+                    .map(CommentMapper::toCommentDto)
+                    .collect(Collectors.toList());
+
             String uri = request.getRequestURI();
 
             ResponseEntity<Object> response = statClient.getStatistics(LocalDateTime.now().minusYears(100),
@@ -282,6 +291,7 @@
 
             EventFullDto eventFullDto = toEventFullDto(event);
             eventFullDto.setViews(views);
+            eventFullDto.setComments(comments);
 
             return eventFullDto;
         }
@@ -321,6 +331,10 @@
                         rangeEnd, onlyAvailable, pageable);
             }
 
+            List<Long> eventsIds = events.stream().map(Event::getId).toList();
+
+            List<Comment> comments = commentRepository.findAllByEventIdIn(eventsIds);
+
             List<EventShortDto> eventShortDtos = events.stream()
                     .map(EventMapper::toEventShortDto)
                     .collect(Collectors.toList());
@@ -339,8 +353,13 @@
                         .filter(viewStats -> viewStats.getUri().equals(uri))
                         .mapToLong(ViewStats::getHits)
                         .sum();
+                List<CommentDto> commentDtos = comments.stream()
+                        .filter(comment -> eventShortDto.getId().equals(comment.getEvent().getId()))
+                        .map(CommentMapper::toCommentDto)
+                        .toList();
 
                 eventShortDto.setViews(views);
+                eventShortDto.setComments(commentDtos);
             }
 
             if ("VIEWS".equals(sort)) {
